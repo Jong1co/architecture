@@ -6,3 +6,4 @@
 
 **2. 개선할 점**
   1. heart가 전체 다 올라가는 현상
+  2. heart data base에 추가
