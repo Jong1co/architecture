@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote for your best!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Roboto+Mono:wght@500&family=Rubik:wght@300&display=swap"
+          rel="stylesheet">
+    <script src="https://kit.fontawesome.com/827eb37611.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            font-family: 'Jua', sans-serif;
+        }
+
+        .header {
+            color: #949494;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 50px;
+            background-color: #fcfcfc;
+        }
+
+        .recordBtn {
+            margin-top: 20px;
+            width: 200px;
+            height: 50px;
+            font-size: 20px;
+            border: 1px solid gray;
+            border-radius: 50px;
+            background-color: transparent;
+        }
+
+        .recordBtn:hover {
+            border: 2px solid gray;
+
+        }
+
+        .postBox {
+            margin-top: 30px;
+        }
+
+        .postBox__img {
+            display: flex;
+            justify-content: center;
+
+        }
+
+        .postBox__img img {
+            width: 25vw;
+        }
+
+
+        .postBox__img--line1 {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .postBox__img--line2 {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .postBox__img--line3 {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .postBox__group {
+            margin: 20px 20px 0 20px;
+            display: flex;
+            flex-direction: column;
+            font-size: 20px;
+        }
+
+        .postBox__group img:hover {
+            filter: brightness(80%);
+            transform: scale(1.05);
+            transition: transform .5s
+        }
+
+        .postBox__group i {
+            color: #ff0000;
+            margin-right: 5px;
+        }
+
+        .postBox__group i:hover {
+            transform: scale(1.1);
+            transition: transform .5s
+        }
+
+        .addHeart {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            margin-left: auto;
+        }
+
+        .countHeart {
+            color: #b6b6b6;
+        }
+
+        .postBox__record {
+            padding: 20px;
+            width: 500px;
+            height: 320px;
+            margin: auto;
+            box-shadow: 0 0 3px 0;
+            color: gray;
+            display: none;
+        }
+
+        .postBtn {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+
+        .postBtn button {
+            width: 200px;
+        }
+
+        .nameAndTag {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .imgBottomTag {
+            color: gray;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .imgBottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            listing();
+        });
+        let count = 0;
+
+        function listing() {
+            $.ajax({
+                    type: 'GET',
+                    url: '/architecture',
+                    data: {},
+                    success: function (response) {
+                        let rows = response['pictures']
+                        for (let i = 0; i < rows.length; i++) {
+                            let url = rows[i]['url'];
+                            let name = rows[i]['name'];
+                            let tag = rows[i]['tag'];
+                            let temp_html = `<div class="postBox__group">
+                                                 <img src="${url}"alt="" onclick="hey()">
+                                                 <div class="imgBottom">
+                                                     <div class="nameAndTag">
+                                                         <div class="imgBottomName">${name}</div>
+                                                         <div class="imgBottomTag">${tag}</div>
+                                                     </div>
+                                                     <div class="addHeart">
+                                                         <i class="fa-solid fa-heart" id="heart"></i>
+                                                         <div class="countHeart"> 0</div>
+                                                     </div>
+                                               </div>
+                                             </div>`
+                            if (i % 3 == 0) {
+                                $('#line1').append(temp_html);
+                            } else if (i % 3 == 1) {
+                                $('#line2').append(temp_html)
+                            } else {
+                                $('#line3').append(temp_html)
+                            }
+                        }
+                    }
+                }
+            )
+        }
+
+        function hey() {
+            count += 1;
+            $('.countHeart').text(count);
+            return count
+        };
+
+        function open_box() {
+            $('.postBox__record').show()
+        }
+
+        function close_box() {
+            $('.postBox__record').hide()
+        }
+
+
+        function recordBtn() {
+            let url = $('#url').val();
+            let name = $('#name').val();
+            let tag = $('#tag').val();
+            $.ajax({
+                type: 'POST',
+                url: '/architecture',
+                data: {url_give: url, name_give: name, tag_give: tag},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload()
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<header class="header">
+    <div class="header__title">원하는만큼 눌러주세요 !</div>
+    <button class="recordBtn" onclick="open_box()">사진 추가하기</button>
+</header>
+<section class="postBox">
+    <div class="postBox__record">
+        <div class="form-floating mb-3">
+            <input id="url" type="email" class="form-control" placeholder="name@example.com">
+            <label>사진 URL</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="name" placeholder="name@example.com">
+            <label for="name">닉네임</label>
+        </div>
+        <div class="form-floating">
+            <textarea class="form-control" placeholder="Leave a comment here" id="tag"></textarea>
+            <label for="tag">태그(ex. #seoul#skyscraper..)</label>
+        </div>
+        <div class="postBtn">
+            <button onclick="recordBtn()" type="button" class="btn btn-dark">기록하기</button>
+            <button onclick="close_box()" type="button" class="btn btn-outline-dark">닫기</button>
+        </div>
+    </div>
+    <div class="postBox__img">
+        <div class="postBox__img--line1" id="line1">
+        </div>
+        <div class="postBox__img--line2" id="line2">
+        </div>
+        <div class="postBox__img--line3" id="line3">
+        </div>
+    </div>
+</section>
+</body>
+</html>
